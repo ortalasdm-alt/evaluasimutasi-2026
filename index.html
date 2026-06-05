@@ -8789,12 +8789,19 @@ async function saveToSupabase() {
 
   function initCanvas() {
     const rect = canvas.getBoundingClientRect();
-    canvas.width = rect.width * window.devicePixelRatio;
-    canvas.height = rect.height * window.devicePixelRatio;
+    const ratio = window.devicePixelRatio || 1;
+    const w = Math.max(rect.width || 300, 300);
+    const h = Math.max(rect.height || 140, 140);
+
+    canvas.width = w * ratio;
+    canvas.height = h * ratio;
+
     ctx = canvas.getContext('2d');
-    ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+    ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
+    ctx.strokeStyle = penColor;
+    ctx.lineWidth = penSize;
   }
 
   function getPos(e) {
