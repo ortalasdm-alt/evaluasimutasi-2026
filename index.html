@@ -7805,10 +7805,9 @@ function doRegister() {
 // STATE GLOBAL
 // ============================================================
 let currentUser = null;
-let supabaseConnected = false;
-let supabaseUrl = '';
-let supabaseKey = '';
-
+let supabaseConnected = true;
+let supabaseUrl = 'https://nabsqssqcctpkuwkbkap.supabase.co';
+let supabaseKey = 'sb_publishable_ICyM8Db4Gsa9NpDuzsWupw_gJLd3JWW';
 // ============================================================
 // LOGIN / LOGOUT
 // ============================================================
@@ -8467,7 +8466,34 @@ function submitForm() {
   if (!validateForm()) return;
   showAlert('Penilaian berhasil disimpan! Gunakan tombol PDF untuk mengunduh atau Database untuk menyimpan ke cloud.', 'success');
 }
+async function saveToSupabase() {
+  const data = collectData();
 
+  try {
+    const res = await fetch(
+      `${supabaseUrl}/rest/v1/evaluasi_mutasi`,
+      {
+        method: 'POST',
+        headers: {
+          'apikey': supabaseKey,
+          'Authorization': 'Bearer ' + supabaseKey,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=representation'
+        },
+        body: JSON.stringify(data)
+      }
+    );
+
+    if (res.ok) {
+      showAlert('Data berhasil disimpan ke database!', 'success');
+    } else {
+      const err = await res.text();
+      showAlert('Gagal menyimpan: ' + err, 'error');
+    }
+  } catch (e) {
+    showAlert('Error: ' + e.message, 'error');
+  }
+}
 function resetForm(silent = false) {
   if (!silent && !confirm('Reset semua data? Tindakan ini tidak dapat dibatalkan.')) return;
   document.querySelectorAll('input, textarea').forEach(el => {
@@ -8676,103 +8702,10 @@ function toggleSupabaseConfig() {
   icon.textContent = body.classList.contains('open') ? '▲' : '▼';
 }
 
+
+
 async function testSupabase() {
-  const url = document.getElementById('supabaseUrl').value.trim();
-  const key = document.getElementById('supabaseKey').value.trim();
-  const statusEl = document.getElementById('supabaseStatus');
-
-  if (!url || !key) {
-    showAlert('Mohon isi Supabase URL dan Anon Key terlebih dahulu.', 'error');
-    return;
-  }
-
-  statusEl.className = 'supabase-connected disconnected';
-  statusEl.textContent = '○ Menguji koneksi...';
-
-  try {
-    const res = await fetch(`${url}/rest/v1/evaluasi_mutasi?select=id&limit=1`, {
-      headers: {
-        'apikey': key,
-        'Authorization': 'Bearer ' + key,
-        'Content-Type': 'application/json'
-      }
-    });
-
-    if (res.ok || res.status === 406) {
-      supabaseUrl = url;
-      supabaseKey = key;
-      supabaseConnected = true;
-      statusEl.className = 'supabase-connected';
-      statusEl.textContent = '✓ Terhubung ke Supabase';
-      showAlert('Koneksi Supabase berhasil!', 'success');
-    } else {
-      supabaseConnected = false;
-      statusEl.className = 'supabase-connected disconnected';
-      statusEl.textContent = '✗ Koneksi gagal (HTTP ' + res.status + ')';
-      showAlert('Koneksi Supabase gagal. Periksa URL dan Key Anda.', 'error');
-    }
-  } catch (err) {
-    supabaseConnected = false;
-    statusEl.className = 'supabase-connected disconnected';
-    statusEl.textContent = '✗ Koneksi gagal: ' + err.message;
-    showAlert('Koneksi Supabase gagal: ' + err.message, 'error');
-  }
-}
-
-// ============================================================
-// SAVE TO SUPABASE
-// ============================================================
-async function saveToSupabase() {
-  if (!validateForm()) return;
-
-  if (!supabaseConnected || !supabaseUrl || !supabaseKey) {
-    showAlert('Belum terhubung ke Supabase. Silakan konfigurasi Supabase terlebih dahulu (khusus Admin).', 'error');
-    return;
-  }
-
-  const data = collectData();
-  const payload = {
-    triwulan: data.triwulan,
-    nama_pegawai: data.nama_pegawai,
-    nip_nik: data.nip_nik,
-    unit_kerja_asal: data.unit_kerja_asal,
-    unit_kerja_baru: data.unit_kerja_baru,
-    tanggal_mutasi: data.tanggal_mutasi,
-    jabatan_pegawai: data.jabatan_pegawai,
-    nama_penilai: data.nama_penilai,
-    jabatan_penilai: data.jabatan_penilai,
-    tanggal_penilaian: data.tanggal_penilaian,
-    nilai_indikator: JSON.stringify(data.nilai_indikator),
-    total_nilai: data.total_nilai,
-    rata_rata: data.rata_rata,
-    kesimpulan: data.kesimpulan,
-    rekomendasi: data.rekomendasi,
-    penginput: data.penginput
-  };
-
-  try {
-    showAlert('Menyimpan data ke Supabase...', 'info');
-    const res = await fetch(`${supabaseUrl}/rest/v1/evaluasi_mutasi`, {
-      method: 'POST',
-      headers: {
-        'apikey': supabaseKey,
-        'Authorization': 'Bearer ' + supabaseKey,
-        'Content-Type': 'application/json',
-        'Prefer': 'return=representation'
-      },
-      body: JSON.stringify(payload)
-    });
-
-    if (res.ok || res.status === 201) {
-      const result = await res.json();
-      showAlert('Data berhasil disimpan ke Supabase! ID: ' + (result[0]?.id || 'N/A'), 'success');
-    } else {
-      const errText = await res.text();
-      showAlert('Gagal menyimpan ke Supabase (HTTP ' + res.status + '): ' + errText, 'error');
-    }
-  } catch (err) {
-    showAlert('Gagal menyimpan ke Supabase: ' + err.message, 'error');
-  }
+  return true;
 }
 
 // ============================================================
