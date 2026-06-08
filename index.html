@@ -7857,8 +7857,7 @@ async function doLogin() {
 
   // Show/hide admin features
   document.getElementById('supabaseConfigSection').style.display = role === 'admin' ? 'block' : 'none';
-  document.getElementById('adminPegawaiSection').style.display = 'none';
-  document.getElementById('pegawaiCountBadge').textContent = DAFTAR_PEGAWAI.length;
+ 
 
   // Populate dropdowns
   await loadPegawaiFromSupabase();
