@@ -5064,7 +5064,7 @@ async function loadPegawaiFromSupabase() {
     console.error('Gagal mengambil pegawai:', error);
     return;
   }
-
+  console.log(data[0]);
   DAFTAR_PEGAWAI.length = 0;
 
   data.forEach(row => {
