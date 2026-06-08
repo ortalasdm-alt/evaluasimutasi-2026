@@ -7786,39 +7786,6 @@ let currentUser = null;
 let supabaseConnected = true;
 let supabaseUrl = 'https://nabsqssqcctpkuwkbkap.supabase.co';
 let supabaseKey = 'sb_publishable_ICyM8Db4Gsa9NpDuzsWupw_gJLd3JWW';
-
-
-  async function loadPegawaiFromSupabase() {
-  try {
-    const res = await fetch(
-      `${supabaseUrl}/rest/v1/pegawai?select=*`,
-      {
-        headers: {
-          'apikey': supabaseKey,
-          'Authorization': 'Bearer ' + supabaseKey
-        }
-      }
-    );
-
-    const data = await res.json();
-
-    DAFTAR_PEGAWAI.length = 0;
-
-    data.forEach(row => {
-      DAFTAR_PEGAWAI.push({
-        nama: row.NAMA,
-        nip: row.NIP,
-        jabatan: row.JABATAN,
-        satuan_kerja: row["SATUAN KERJA"]
-      });
-    });
-
-    console.log('Pegawai loaded:', DAFTAR_PEGAWAI.length);
-
-  } catch (err) {
-    console.error('Gagal load pegawai:', err);
-  }
-}
 // ============================================================
 // LOGIN / LOGOUT
 // ============================================================
@@ -7856,11 +7823,19 @@ async function doLogin() {
   badge.className = 'role-badge ' + (role === 'admin' ? 'role-admin' : 'role-penilai');
 
   // Show/hide admin features
-  document.getElementById('supabaseConfigSection').style.display = role === 'admin' ? 'block' : 'none';
- 
+  const supabaseSection = document.getElementById('supabaseConfigSection');
+  if (supabaseSection) supabaseSection.style.display = role === 'admin' ? 'block' : 'none';
+
+  const adminSection = document.getElementById('adminPegawaiSection');
+  if (adminSection) adminSection.style.display = role === 'admin' ? 'block' : 'none';
+
+  const badgeCount = document.getElementById('pegawaiCountBadge');
+  if (badgeCount) badgeCount.textContent = DAFTAR_PEGAWAI.length;
 
   // Populate dropdowns
-  await loadPegawaiFromSupabase();
+  if (typeof loadPegawaiFromSupabase === 'function') {
+    await loadPegawaiFromSupabase();
+  }
   populatePegawaiDropdown();
   populatePenilaiDropdown();
 
@@ -8090,12 +8065,17 @@ function pilihPegawai() {
   if (idx === '') {
     document.getElementById('nipnik').value = '';
     document.getElementById('jabatan').value = '';
+    document.getElementById('printNamaPegawai').textContent = '—';
+    document.getElementById('printNipPegawai').textContent = '';
     return;
   }
   const p = DAFTAR_PEGAWAI[parseInt(idx)];
   if (!p) return;
   document.getElementById('nipnik').value = p.nip || '';
   document.getElementById('jabatan').value = p.jabatan || '';
+  // update print display
+  document.getElementById('printNamaPegawai').textContent = p.nama || '—';
+  document.getElementById('printNipPegawai').textContent = p.nip ? 'NIP. ' + p.nip : '';
   if (p.satuan_kerja) {
     // Auto-fill Unit Kerja Asal
     const unitSel = document.getElementById('unitAsal');
