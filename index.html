@@ -8065,8 +8065,8 @@ function pilihPegawai() {
   if (idx === '') {
     document.getElementById('nipnik').value = '';
     document.getElementById('jabatan').value = '';
-    document.getElementById('printNamaPegawai').textContent = '—';
-    document.getElementById('printNipPegawai').textContent = '';
+    const pnp=document.getElementById('printNamaPegawai'); if(pnp) pnp.textContent='—';
+    const pnip=document.getElementById('printNipPegawai'); if(pnip) pnip.textContent='';
     return;
   }
   const p = DAFTAR_PEGAWAI[parseInt(idx)];
@@ -8074,8 +8074,8 @@ function pilihPegawai() {
   document.getElementById('nipnik').value = p.nip || '';
   document.getElementById('jabatan').value = p.jabatan || '';
   // update print display
-  document.getElementById('printNamaPegawai').textContent = p.nama || '—';
-  document.getElementById('printNipPegawai').textContent = p.nip ? 'NIP. ' + p.nip : '';
+  const pnp2=document.getElementById('printNamaPegawai'); if(pnp2) pnp2.textContent = p.nama || '—';
+  const pnip2=document.getElementById('printNipPegawai'); if(pnip2) pnip2.textContent = p.nip ? 'NIP. ' + p.nip : '';
   if (p.satuan_kerja) {
     // Auto-fill Unit Kerja Asal
     const unitSel = document.getElementById('unitAsal');
