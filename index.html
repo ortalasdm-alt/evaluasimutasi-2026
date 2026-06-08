@@ -8090,17 +8090,12 @@ function pilihPegawai() {
   if (idx === '') {
     document.getElementById('nipnik').value = '';
     document.getElementById('jabatan').value = '';
-    document.getElementById('printNamaPegawai').textContent = '—';
-    document.getElementById('printNipPegawai').textContent = '';
     return;
   }
   const p = DAFTAR_PEGAWAI[parseInt(idx)];
   if (!p) return;
   document.getElementById('nipnik').value = p.nip || '';
   document.getElementById('jabatan').value = p.jabatan || '';
-  // update print display
-  document.getElementById('printNamaPegawai').textContent = p.nama || '—';
-  document.getElementById('printNipPegawai').textContent = p.nip ? 'NIP. ' + p.nip : '';
   if (p.satuan_kerja) {
     // Auto-fill Unit Kerja Asal
     const unitSel = document.getElementById('unitAsal');
