@@ -7,6 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root {
     --navy: #152240;
@@ -5048,6 +5049,35 @@ let currentUser = null;
 let supabaseConnected = true;
 let supabaseUrl = 'https://nabsqssqcctpkuwkbkap.supabase.co';
 let supabaseKey = 'sb_publishable_ICyM8Db4Gsa9NpDuzsWupw_gJLd3JWW';
+
+  const supabaseClient = supabase.createClient(
+  supabaseUrl,
+  supabaseKey
+);
+
+async function loadPegawaiFromSupabase() {
+  const { data, error } = await supabaseClient
+    .from('pegawai')
+    .select('*');
+
+  if (error) {
+    console.error('Gagal mengambil pegawai:', error);
+    return;
+  }
+
+  DAFTAR_PEGAWAI.length = 0;
+
+  data.forEach(row => {
+    DAFTAR_PEGAWAI.push({
+      nama: row.nama || '',
+      nip: row.nip || '',
+      jabatan: row.jabatan || '',
+      satuan_kerja: row.satuan_kerja || ''
+    });
+  });
+
+  console.log('Pegawai loaded:', DAFTAR_PEGAWAI.length);
+}
 // ============================================================
 // LOGIN / LOGOUT
 // ============================================================
