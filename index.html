@@ -5056,9 +5056,10 @@ let supabaseKey = 'sb_publishable_ICyM8Db4Gsa9NpDuzsWupw_gJLd3JWW';
 );
 
 async function loadPegawaiFromSupabase() {
-  const { data, error } = await supabaseClient
-    .from('pegawai')
-    .select('*');
+const { data, error } = await supabaseClient
+  .from('pegawai')
+  .select('*')
+  .range(0, 3000);
 
   if (error) {
     console.error('Gagal mengambil pegawai:', error);
