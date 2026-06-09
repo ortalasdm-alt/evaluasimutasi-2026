@@ -5077,6 +5077,9 @@ async function loadPegawaiFromSupabase() {
 });
 
   console.log('Pegawai loaded:', DAFTAR_PEGAWAI.length);
+  console.log('Cari Wahyu:', DAFTAR_PEGAWAI.filter(p =>
+  (p.nama || '').toLowerCase().includes('wahyu')
+));
 }
 // ============================================================
 // LOGIN / LOGOUT
