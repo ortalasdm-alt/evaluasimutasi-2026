@@ -5115,14 +5115,47 @@ async function doLogin() {
     return;
   }
 
-  const user = USERS[username];
-  if (!user || user.password !== password || user.role !== role) {
-    errEl.textContent = 'Username, password, atau peran tidak valid.';
+  let user = null;
+
+// ADMIN tetap hardcoded
+if (role === 'admin') {
+
+  if (username !== 'admin' || password !== 'admin123') {
+    errEl.textContent = 'Username atau password admin salah.';
     errEl.classList.add('show');
     return;
   }
 
-  currentUser = { username, ...user };
+  user = {
+    username: 'admin',
+    role: 'admin',
+    nama: 'Administrator Sistem'
+  };
+
+} else {
+
+  const { data, error } = await supabaseClient
+    .from('users')
+    .select('*')
+    .eq('username', username)
+    .single();
+
+  if (error || !data) {
+    errEl.textContent = 'User tidak ditemukan.';
+    errEl.classList.add('show');
+    return;
+  }
+
+  if (data.password !== password) {
+    errEl.textContent = 'Password salah.';
+    errEl.classList.add('show');
+    return;
+  }
+
+  user = data;
+}
+
+  currentUser = user;
   errEl.classList.remove('show');
 
   // Tampilkan UI
