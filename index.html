@@ -4988,7 +4988,7 @@ loadUsers();
 // ============================================================
 // REGISTER PENILAI
 // ============================================================
-function doRegister() {
+async function doRegister() {
   const errEl  = document.getElementById('registerError');
   const succEl = document.getElementById('registerSuccess');
   errEl.classList.remove('show');
@@ -5025,14 +5025,23 @@ function doRegister() {
   }
 
   const p = DAFTAR_PEGAWAI[parseInt(pegawaiIdx)];
-  USERS[username] = {
-    password,
+
+const { error } = await supabaseClient
+  .from('users')
+  .insert([{
+    username: username,
+    password: password,
     role: 'penilai',
     nama: p.nama,
     jabatan: p.jabatan || '',
-    satuan_kerja: p.satuan_kerja || '',
-  };
-  saveUsers();
+    satuan_kerja: p.satuan_kerja || ''
+  }]);
+
+if (error) {
+  errEl.textContent = 'Gagal menyimpan akun: ' + error.message;
+  errEl.classList.add('show');
+  return;
+}
 
   regSdClear();
   document.getElementById('regUsername').value = '';
