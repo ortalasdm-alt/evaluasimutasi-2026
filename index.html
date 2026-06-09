@@ -5026,6 +5026,8 @@ async function doRegister() {
 
   const p = DAFTAR_PEGAWAI[parseInt(pegawaiIdx)];
 
+console.log('REGISTER START');
+
 const { error } = await supabaseClient
   .from('users')
   .insert([{
