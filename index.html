@@ -2362,13 +2362,11 @@ async function doLogin() {
   const password = document.getElementById('loginPassword').value;
   const errEl = document.getElementById('loginError');
 
-  if (!role || !username || !password) {
-    errEl.textContent = 'Mohon isi semua field terlebih dahulu.';
-    errEl.classList.add('show');
-    return;
-  }
-
-  let user = null;
+  if (!username || !password) {
+  errEl.textContent = 'Mohon isi username dan password.';
+  errEl.classList.add('show');
+  return;
+}
 
 // ADMIN tetap hardcoded
 if (role === 'admin') {
