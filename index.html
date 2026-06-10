@@ -3045,10 +3045,52 @@ function submitForm() {
   if (!validateForm()) return;
   showAlert('Penilaian berhasil disimpan! Gunakan tombol PDF untuk mengunduh atau Database untuk menyimpan ke cloud.', 'success');
 }
+  async function uploadPdfToSupabase() {
+
+  const data = collectData();
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  doc.text(
+    `Evaluasi Mutasi - ${data.nama_pegawai}`,
+    20,
+    20
+  );
+
+  const blob = doc.output('blob');
+
+  const filename = `Evaluasi_${Date.now()}.pdf`;
+
+  const { error } = await supabaseClient.storage
+    .from('pdf evaluasi')
+    .upload(filename, blob, {
+      contentType: 'application/pdf',
+      upsert: true
+    });
+
+  if (error) {
+    console.error(error);
+    return null;
+  }
+
+  const { data: urlData } =
+    supabaseClient.storage
+      .from('pdf evaluasi')
+      .getPublicUrl(filename);
+
+  return urlData.publicUrl;
+}
 async function saveToSupabase() {
   const data = collectData();
 
-  try {
+const pdfUrl = await uploadPdfToSupabase();
+
+if (pdfUrl) {
+  data.pdf_url = pdfUrl;
+}
+
+try {
     const res = await fetch(
       `${supabaseUrl}/rest/v1/evaluasi_mutasi`,
       {
