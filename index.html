@@ -1291,10 +1291,17 @@
         <label>Password</label>
         <input type="password" id="loginPassword" placeholder="Masukkan password" autocomplete="current-password">
       </div>
-      <button class="login-btn" onclick="doLogin()">🔐 Masuk ke Sistem</button>
-      <div class="login-error" id="loginError">Username, password, atau peran tidak valid.</div>
-      
-    </div>
+     <button class="login-btn" onclick="doLogin()">🔐 Masuk ke Sistem</button>
+
+<div style="text-align:center;margin-top:10px;">
+  <a href="#" onclick="showForgotPassword(); return false;">
+    Lupa Password?
+  </a>
+</div>
+
+<div class="login-error" id="loginError">
+  Username, password, atau peran tidak valid.
+</div>
 
     <!-- ===== PANEL DAFTAR PENILAI ===== -->
     <div class="login-panel" id="panelRegister">
@@ -2458,7 +2465,11 @@ function doLogout() {
   document.getElementById('loginRole').value = '';
   resetForm(true);
 }
-
+function showForgotPassword() {
+  alert(
+    'Jika Anda lupa password, silakan hubungi Administrator Sistem untuk melakukan reset password akun.'
+  );
+}
 // ============================================================
 // POPULATE DROPDOWNS
 // ============================================================
