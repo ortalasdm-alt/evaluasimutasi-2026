@@ -3084,13 +3084,8 @@ function submitForm() {
 async function saveToSupabase() {
   const data = collectData();
 
-const pdfUrl = await uploadPdfToSupabase();
+  try {
 
-if (pdfUrl) {
-  data.pdf_url = pdfUrl;
-}
-
-try {
     const res = await fetch(
       `${supabaseUrl}/rest/v1/evaluasi_mutasi`,
       {
