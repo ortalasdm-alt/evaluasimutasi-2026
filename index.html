@@ -3084,6 +3084,8 @@ function submitForm() {
 async function saveToSupabase() {
   const data = collectData();
 
+  console.log('DATA KIRIM:', data);
+
   try {
 
     const res = await fetch(
@@ -3100,13 +3102,19 @@ async function saveToSupabase() {
       }
     );
 
+    console.log('STATUS:', res.status);
+
+    const responseText = await res.text();
+    console.log('RESPONSE:', responseText);
+
     if (res.ok) {
       showAlert('Data berhasil disimpan ke database!', 'success');
     } else {
       const err = await res.text();
-      showAlert('Gagal menyimpan: ' + err, 'error');
+      showAlert('Gagal menyimpan: ' + responseText, 'error');
     }
   } catch (e) {
+    console.error('ERROR SAVE:', e);
     showAlert('Error: ' + e.message, 'error');
   }
 }
