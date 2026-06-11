@@ -2718,17 +2718,26 @@ function pilihPegawai() {
 
 function pilihPenilai() {
   const idx = document.getElementById('penilaiSelect').value;
+
   if (idx === '') {
     document.getElementById('jabatanPenilai').value = '';
     document.getElementById('printNamaPenilai').textContent = '—';
     document.getElementById('printJabatanPenilai').textContent = '';
     return;
   }
+
   const p = DAFTAR_PEGAWAI[parseInt(idx)];
-  document.getElementById('jabatanPenilai').value = p ? (p.jabatan || '') : '';
-  document.getElementById('printNamaPenilai').textContent = p ? (p.nama || '—') : '—';
-  document.getElementById('printJabatanPenilai').textContent = p ? (p.jabatan || '') : '';
+
+  document.getElementById('jabatanPenilai').value =
+    p ? (p.jabatan || '') : '';
+
+  document.getElementById('printNamaPenilai').textContent =
+    p ? (p.nama || '—') : '—';
+
+  document.getElementById('printJabatanPenilai').textContent =
+    p ? ('NIP : ' + (p.nip || '')) : '';
 }
+
 
 // ============================================================
 // UNIT KERJA BARU - SEARCHABLE DROPDOWN (dari data pegawai)
