@@ -1238,13 +1238,29 @@
     color: var(--gray-400);
     font-size: 12px;
   }
-  mark.sd-hl {
-    background: #ffe066;
-    color: var(--navy);
-    border-radius: 2px;
-    padding: 0 1px;
-    font-weight: 700;
+ mark.sd-hl {
+  background: #ffe066;
+  color: var(--navy);
+  border-radius: 2px;
+  padding: 0 1px;
+  font-weight: 700;
+}
+
+@media print {
+
+  #ttdWrap {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
   }
+
+  #ttdCanvas {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+  }
+
+}
 
 </style>
 </head>
