@@ -2487,7 +2487,36 @@ function doLogout() {
   document.getElementById('loginRole').value = '';
   resetForm(true);
 }
+async function uploadPDFToSupabase(pdfBlob) {
+  try {
 
+    const fileName =
+      'evaluasi_mutasi_' +
+      Date.now() +
+      '.pdf';
+
+    const { data, error } = await supabaseClient.storage
+      .from('pdf-evaluasi')
+      .upload(fileName, pdfBlob, {
+        contentType: 'application/pdf',
+        upsert: true
+      });
+
+    if (error) throw error;
+
+    const { data: urlData } = supabaseClient.storage
+      .from('pdf-evaluasi')
+      .getPublicUrl(fileName);
+
+    console.log('UPLOAD BERHASIL:', urlData.publicUrl);
+
+    return urlData.publicUrl;
+
+  } catch (err) {
+    console.error('UPLOAD ERROR:', err);
+    return null;
+  }
+}
 // ============================================================
 // POPULATE DROPDOWNS
 // ============================================================
@@ -3346,12 +3375,21 @@ async function generatePDF() {
     doc.text('RSUP Fatmawati | Sistem Evaluasi Mutasi Pegawai 2026 | Dicetak: ' + new Date().toLocaleDateString('id-ID'), W / 2, 292, { align: 'center' });
 
     const filename = `Evaluasi_Mutasi_${(data.nama_pegawai || 'Pegawai').replace(/[^a-z0-9]/gi,'_')}_${data.triwulan.replace(' ','')}_2026.pdf`;
-    doc.save(filename);
-    showAlert('PDF berhasil diunduh: ' + filename, 'success');
-  } catch (err) {
-    console.error(err);
-    showAlert('Gagal membuat PDF: ' + err.message, 'error');
-  }
+
+const pdfBlob = doc.output('blob');
+
+const pdfUrl = await uploadPDFToSupabase(pdfBlob);
+
+console.log('PDF URL:', pdfUrl);
+
+doc.save(filename);
+
+showAlert('PDF berhasil diunduh: ' + filename, 'success');
+
+} catch (err) {
+  console.error(err);
+  showAlert('Gagal membuat PDF: ' + err.message, 'error');
+}
 }
 
 // ============================================================
