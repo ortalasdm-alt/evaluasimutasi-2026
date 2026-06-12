@@ -2488,12 +2488,13 @@ function doLogout() {
   resetForm(true);
 }
 async function uploadPDFToSupabase(pdfBlob) {
-  try {
 
-    const fileName =
-      'evaluasi_mutasi_' +
-      Date.now() +
-      '.pdf';
+  console.log('UPLOAD PDF DIPANGGIL');
+
+  const fileName =
+    'evaluasi_mutasi_' +
+    Date.now() +
+    '.pdf';
 
     const { data, error } = await supabaseClient.storage
       .from('pdf-evaluasi')
