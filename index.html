@@ -3113,9 +3113,36 @@ function collectData() {
   };
 }
 
+
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbyBMBMfpBnql0w-CM4ba_LySiZmkb0eMaY9hoX2_M0zVuOFg8SyGkxawsv2SGM8RZeCCQ/exec';
+
+async function saveToGoogleSheet() {
+  const data = collectData();
+
+  try {
+    const res = await fetch(GAS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+
+    const result = await res.json();
+
+    if (result.success) {
+      showAlert('Data berhasil disimpan ke Google Sheet!', 'success');
+    } else {
+      showAlert('Gagal menyimpan ke Google Sheet: ' + (result.error || ''), 'error');
+    }
+  } catch (err) {
+    console.error(err);
+    showAlert('Error Google Sheet: ' + err.message, 'error');
+  }
+}
+
+
 function submitForm() {
   if (!validateForm()) return;
-  showAlert('Penilaian berhasil disimpan! Gunakan tombol PDF untuk mengunduh atau Database untuk menyimpan ke cloud.', 'success');
+  saveToGoogleSheet();
 }
   async function uploadPdfToSupabase() {
 
