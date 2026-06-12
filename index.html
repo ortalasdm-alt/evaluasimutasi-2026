@@ -2491,10 +2491,12 @@ async function uploadPDFToSupabase(pdfBlob) {
 
   console.log('UPLOAD PDF DIPANGGIL');
 
-  const fileName =
-    'evaluasi_mutasi_' +
-    Date.now() +
-    '.pdf';
+  try {
+
+    const fileName =
+      'evaluasi_mutasi_' +
+      Date.now() +
+      '.pdf';
 
     const { data, error } = await supabaseClient.storage
       .from('pdf-evaluasi')
