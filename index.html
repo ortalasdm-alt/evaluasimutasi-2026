@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- Supabase removed -->
 <style>
   :root {
     --navy: #152240;
@@ -1275,6 +1275,10 @@
 }
 
 </style>
+
+<script>
+const GOOGLE_SCRIPT_URL='PASTE_APPS_SCRIPT_URL_HERE';
+</script>
 </head>
 <body>
 
@@ -1871,7 +1875,7 @@ Siti Nurhaliza&#44; S.Kep,198501122005012010,Perawat Pelaksana,ICU</div>
         <button class="btn btn-outline" onclick="resetForm()">🔄 Reset Form</button>
         <button class="btn btn-print" onclick="window.print()">🖨️ Cetak / Print</button>
         <button class="btn btn-pdf" onclick="generatePDF()">📄 Download PDF</button>
-        <button class="btn btn-supabase" onclick="saveToSupabase()">☁️ Simpan ke Database</button>
+        <button class="btn btn-supabase" onclick="saveToGoogleSheet()">☁️ Simpan ke Database</button>
         <button class="btn btn-primary" onclick="submitForm()">✓ Simpan Penilaian</button>
       </div>
     </div>
@@ -3139,18 +3143,6 @@ async function saveToGoogleSheet() {
   }
 }
 
-
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxhD9n4Q2OWGQOu_zNTupjjQV5NeFkB-rCtYTlXLo4t3Ouj0RGi0Ykq4uunegM6Hg4GFA/exec';
-
-async function saveToGoogleSheet() {
-  const data = collectData();
-  try {
-    const response = await fetch(GOOGLE_SCRIPT_URL, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
-    const result = await response.json();
-    if(result.success) showAlert('Data berhasil disimpan ke Google Sheet','success');
-    else showAlert('Gagal: '+result.error,'error');
-  } catch(e) { showAlert('Error: '+e.message,'error'); console.error(e); }
-}
 
 function submitForm() {
   if (!validateForm()) return;
