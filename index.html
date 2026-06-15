@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
   :root {
     --navy: #152240;
@@ -2267,87 +2267,25 @@ document.addEventListener('mousedown', function(e) {
 // REGISTER PENILAI
 // ============================================================
 async function doRegister() {
-  const errEl  = document.getElementById('registerError');
-  const succEl = document.getElementById('registerSuccess');
-  errEl.classList.remove('show');
-  succEl.classList.remove('show');
-
-  const pegawaiIdx = document.getElementById('regPegawaiIdx').value;
-  const username   = document.getElementById('regUsername').value.trim().toLowerCase();
-  const password   = document.getElementById('regPassword').value;
-  const passConf   = document.getElementById('regPasswordConfirm').value;
-
-  if (pegawaiIdx === '') {
-    errEl.textContent = 'Pilih nama pegawai Anda terlebih dahulu.';
-    errEl.classList.add('show'); return;
-  }
-  if (!username || username.length < 4) {
-    errEl.textContent = 'Username minimal 4 karakter.';
-    errEl.classList.add('show'); return;
-  }
-  if (!/^[a-z0-9._-]+$/.test(username)) {
-    errEl.textContent = 'Username hanya boleh huruf kecil, angka, titik, underscore, atau strip.';
-    errEl.classList.add('show'); return;
-  }
-  const { data: existingUser } = await supabaseClient
-  .from('users')
-  .select('username')
-  .eq('username', username)
-  .maybeSingle();
-
-if (existingUser) {
-  errEl.textContent = 'Username "' + username + '" sudah digunakan. Pilih username lain.';
-  errEl.classList.add('show');
-  return;
-}
-  if (!password || password.length < 6) {
-    errEl.textContent = 'Password minimal 6 karakter.';
-    errEl.classList.add('show'); return;
-  }
-  if (password !== passConf) {
-    errEl.textContent = 'Konfirmasi password tidak cocok.';
-    errEl.classList.add('show'); return;
-  }
-
-  const p = DAFTAR_PEGAWAI[parseInt(pegawaiIdx)];
-
-console.log('REGISTER START');
-
-const { error } = await supabaseClient
-  .from('users')
-  .insert([{
-    username: username,
-    password: password,
-    role: 'penilai',
-    nama: p.nama,
-    jabatan: p.jabatan || '',
-    satuan_kerja: p.satuan_kerja || ''
-  }]);
-
-if (error) {
-  errEl.textContent = 'Gagal menyimpan akun: ' + error.message;
-  errEl.classList.add('show');
-  return;
-}
-
-  regSdClear();
-  document.getElementById('regUsername').value = '';
-  document.getElementById('regPassword').value = '';
-  document.getElementById('regPasswordConfirm').value = '';
-
-  succEl.innerHTML = '✅ Akun berhasil didaftarkan!<br>'
-    + '<strong>' + escHtml(p.nama) + '</strong><br>'
-    + (p.satuan_kerja ? escHtml(p.satuan_kerja) + '<br>' : '')
-    + 'Username: <strong>' + escHtml(username) + '</strong><br>'
-    + '<span style="font-size:12px;color:var(--gray-400);">Klik tab <strong>Masuk</strong> untuk login.</span>';
-  succEl.classList.add('show');
+ const errEl=document.getElementById('registerError'); const succEl=document.getElementById('registerSuccess');
+ const username=document.getElementById('regUsername').value.trim().toLowerCase();
+ const password=document.getElementById('regPassword').value;
+ const passConf=document.getElementById('regPasswordConfirm').value;
+ const pegawaiIdx=document.getElementById('regPegawaiIdx').value;
+ if(password!==passConf){errEl.textContent='Konfirmasi password tidak cocok';errEl.classList.add('show');return;}
+ const p=DAFTAR_PEGAWAI[parseInt(pegawaiIdx)];
+ const res=await fetch(API_URL,{method:'POST',body:JSON.stringify({action:'register',username,password,nama_lengkap:p.nama})});
+ const r=await res.json();
+ if(!r.success){errEl.textContent=r.message||'Registrasi gagal';errEl.classList.add('show');return;}
+ succEl.textContent='Registrasi berhasil';
+ succEl.classList.add('show');
 }
 
 // ============================================================
 // STATE GLOBAL
 // ============================================================
 let currentUser = null;
-let supabaseConnected = true;
+let supabaseConnected = false; const API_URL='https://script.google.com/macros/s/AKfycbxhD9n4Q2OWGQOu_zNTupjjQV5NeFkB-rCtYTlXLo4t3Ouj0RGi0Ykq4uunegM6Hg4GFA/exec';
 let supabaseUrl = 'https://nabsqssqcctpkuwkbkap.supabase.co';
 let supabaseKey = 'sb_publishable_ICyM8Db4Gsa9NpDuzsWupw_gJLd3JWW';
 
@@ -2389,102 +2327,24 @@ const { data, error } = await supabaseClient
 // LOGIN / LOGOUT
 // ============================================================
 async function doLogin() {
-  const role = document.getElementById('loginRole').value;
-  const username = document.getElementById('loginUsername').value.trim();
-  const password = document.getElementById('loginPassword').value;
-  const errEl = document.getElementById('loginError');
-
-  if (!role || !username || !password) {
-    errEl.textContent = 'Mohon isi semua field terlebih dahulu.';
-    errEl.classList.add('show');
-    return;
-  }
-
-  let user = null;
-
-// ADMIN tetap hardcoded
-if (role === 'admin') {
-
-  if (username !== 'admin' || password !== 'admin123') {
-    errEl.textContent = 'Username atau password admin salah.';
-    errEl.classList.add('show');
-    return;
-  }
-
-  user = {
-    username: 'admin',
-    role: 'admin',
-    nama: 'Administrator Sistem'
-  };
-
-} else {
-
-  const { data, error } = await supabaseClient
-    .from('users')
-    .select('*')
-    .eq('username', username)
-    .single();
-
-  if (error || !data) {
-    errEl.textContent = 'User tidak ditemukan.';
-    errEl.classList.add('show');
-    return;
-  }
-
-  if (data.password !== password) {
-    errEl.textContent = 'Password salah.';
-    errEl.classList.add('show');
-    return;
-  }
-
-  user = data;
-}
-
-  currentUser = user;
+  const username=document.getElementById('loginUsername').value.trim().toLowerCase();
+  const password=document.getElementById('loginPassword').value;
+  const errEl=document.getElementById('loginError');
   errEl.classList.remove('show');
-
-  // Tampilkan UI
+  if(!username||!password){errEl.textContent='Isi username dan password';errEl.classList.add('show');return;}
+  if(username==='admin' && password==='admin123'){
+    currentUser={nama:'Administrator Sistem',username:'admin'};
+  } else {
+    const res=await fetch(API_URL,{method:'POST',body:JSON.stringify({action:'login',username,password})});
+    const result=await res.json();
+    if(!result.success){errEl.textContent=result.message||'Login gagal';errEl.classList.add('show');return;}
+    currentUser={nama:result.user.nama_lengkap,username:result.user.username};
+  }
   document.getElementById('loginOverlay').classList.add('hidden');
-  document.getElementById('topbar').style.display = 'flex';
-  document.getElementById('mainContent').style.display = 'block';
-
-  // Set topbar
-  document.getElementById('topbarName').textContent = user.nama;
-  const badge = document.getElementById('topbarRoleBadge');
-  badge.textContent = role === 'admin' ? 'Administrator' : 'Penilai';
-  badge.className = 'role-badge ' + (role === 'admin' ? 'role-admin' : 'role-penilai');
-
-  // Show/hide admin features
-  const supabaseSection = document.getElementById('supabaseConfigSection');
-  if (supabaseSection) supabaseSection.style.display = role === 'admin' ? 'block' : 'none';
-
-  const adminSection = document.getElementById('adminPegawaiSection');
-  if (adminSection) adminSection.style.display = role === 'admin' ? 'block' : 'none';
-
-  const badgeCount = document.getElementById('pegawaiCountBadge');
-  if (badgeCount) badgeCount.textContent = DAFTAR_PEGAWAI.length;
-
-  // Populate dropdowns
-  if (typeof loadPegawaiFromSupabase === 'function') {
-    await loadPegawaiFromSupabase();
-  }
-  populatePegawaiDropdown();
-  populatePenilaiDropdown();
-
-  // If penilai, auto-select diri sendiri
-  if (role === 'penilai') {
-    const firstName = user.nama.split(',')[0].toLowerCase();
-    const found = DAFTAR_PEGAWAI.findIndex(p => (p.nama || '').toLowerCase().includes(firstName));
-    if (found >= 0) {
-      document.getElementById('penilaiSelect').value = found;
-      document.getElementById('sdPenilaiInput').value = DAFTAR_PEGAWAI[found].nama;
-      document.getElementById('sdPenilaiInput').classList.add('sd-selected');
-      document.querySelector('#sdPenilai .sd-clear').classList.add('visible');
-      pilihPenilai();
-    }
-  }
-
-  showAlert('Selamat datang, ' + user.nama + '! Silakan isi form evaluasi.', 'success');
+  document.getElementById('topbar').style.display='flex';
+  document.getElementById('mainContent').style.display='block';
+  document.getElementById('topbarName').textContent=currentUser.nama;
+  populatePegawaiDropdown(); populatePenilaiDropdown();
 }
 
 function doLogout() {
