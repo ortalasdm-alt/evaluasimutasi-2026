@@ -1285,6 +1285,8 @@ async function apiGet(action){
 }
 </script>
 
+
+<script>const API_URL='https://script.google.com/macros/s/AKfycbxhD9n4Q2OWGQOu_zNTupjjQV5NeFkB-rCtYTlXLo4t3Ouj0RGi0Ykq4uunegM6Hg4GFA/exec'; const supabase={from:()=>({select:()=>({}),insert:()=>({})}),auth:{}};</script>
 </head>
 <body>
 
@@ -1313,14 +1315,7 @@ async function apiGet(action){
 
     <!-- ===== PANEL LOGIN ===== -->
     <div class="login-panel active" id="panelLogin">
-      <div class="login-field">
-        <label>Peran</label>
-        <select id="loginRole">
-          <option value="">— Pilih Peran —</option>
-          <option value="admin">Administrator</option>
-          <option value="penilai">Penilai</option>
-        </select>
-      </div>
+      
       <div class="login-field">
         <label>Username</label>
         <input type="text" id="loginUsername" placeholder="Masukkan username" autocomplete="username">
@@ -1330,7 +1325,7 @@ async function apiGet(action){
         <input type="password" id="loginPassword" placeholder="Masukkan password" autocomplete="current-password">
       </div>
       <button class="login-btn" onclick="doLogin()">🔐 Masuk ke Sistem</button>
-      <div class="login-error" id="loginError">Username, password, atau peran tidak valid.</div>
+      <div class="login-error" id="loginError">Username atau password tidak valid.</div>
       
     </div>
 
