@@ -2281,38 +2281,13 @@ async function doRegister() {
 // ============================================================
 let currentUser = null;
 let supabaseConnected = false; const API_URL='https://script.google.com/macros/s/AKfycbxhD9n4Q2OWGQOu_zNTupjjQV5NeFkB-rCtYTlXLo4t3Ouj0RGi0Ykq4uunegM6Hg4GFA/exec';
-let supabaseUrl = 'https://nabsqssqcctpkuwkbkap.supabase.co';
-let supabaseKey = 'sb_publishable_ICyM8Db4Gsa9NpDuzsWupw_gJLd3JWW';
-
-  const supabaseClient = supabase.createClient(
-  supabaseUrl,
-  supabaseKey
-);
+let supabaseUrl=''; let supabaseKey=''; const supabaseClient=null;
 
 async function loadPegawaiFromSupabase() {
-const { data, error } = await supabaseClient
-  .from('pegawai')
-  .select('*')
-  .range(0, 3000);
-
-  if (error) {
-    console.error('Gagal mengambil pegawai:', error);
-    return;
-  }
-  console.log(data[0]);
-  DAFTAR_PEGAWAI.length = 0;
-
-  data.forEach(row => {
-  DAFTAR_PEGAWAI.push({
-    nama: row.NAMA || '',
-    nip: row.NIP || '',
-    jabatan: row.JABATAN || '',
-    satuan_kerja: row['SATUAN KERJA'] || ''
-  });
-});
-
-  console.log('Pegawai loaded:', DAFTAR_PEGAWAI.length);
-
+ const data=await fetch(API_URL+'?action=pegawai').then(r=>r.json());
+ DAFTAR_PEGAWAI.length=0;
+ data.forEach(row=>DAFTAR_PEGAWAI.push({nama:row.nama_pegawai||'',nip:row.nip_nik||'',jabatan:row.jabatan_pegawai||row.jabatan||'',satuan_kerja:row.unit_kerja||''}));
+ console.log('Pegawai loaded:', DAFTAR_PEGAWAI.length);
 }
 
 // ============================================================
@@ -2349,44 +2324,10 @@ function doLogout() {
   document.getElementById('mainContent').style.display = 'none';
   document.getElementById('loginUsername').value = '';
   document.getElementById('loginPassword').value = '';
-  document.getElementById('loginRole').value = '';
+  
   resetForm(true);
 }
-async function uploadPDFToSupabase(pdfBlob) {
-
-  console.log('UPLOAD PDF DIPANGGIL');
-  console.log('SUPABASE URL:', supabaseUrl);
-  console.log('SUPABASE CLIENT:', supabaseClient);
-
-  try {
-
-    const fileName =
-      'evaluasi_mutasi_' +
-      Date.now() +
-      '.pdf';
-
-    const { data, error } = await supabaseClient.storage
-      .from('pdf-evaluasi')
-      .upload(fileName, pdfBlob, {
-        contentType: 'application/pdf',
-        upsert: true
-      });
-
-    if (error) throw error;
-
-    const { data: urlData } = supabaseClient.storage
-      .from('pdf-evaluasi')
-      .getPublicUrl(fileName);
-
-    console.log('UPLOAD BERHASIL:', urlData.publicUrl);
-
-    return urlData.publicUrl;
-
-  } catch (err) {
-    console.error('UPLOAD ERROR:', err);
-    return null;
-  }
-}
+async function uploadPDFToSupabase(pdfBlob){ return null; }
 // ============================================================
 // POPULATE DROPDOWNS
 // ============================================================
