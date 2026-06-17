@@ -2262,36 +2262,17 @@ document.addEventListener('mousedown', function(e) {
 // REGISTER PENILAI
 // ============================================================
 async function doRegister() {
- const errEl=document.getElementById('registerError');
- const succEl=document.getElementById('registerSuccess');
-
+ const errEl=document.getElementById('registerError'); const succEl=document.getElementById('registerSuccess');
  const username=document.getElementById('regUsername').value.trim().toLowerCase();
  const password=document.getElementById('regPassword').value;
  const passConf=document.getElementById('regPasswordConfirm').value;
  const pegawaiIdx=document.getElementById('regPegawaiIdx').value;
-
- if(password!==passConf){
-   errEl.textContent='Konfirmasi password tidak cocok';
-   errEl.classList.add('show');
-   return;
- }
-
+ if(password!==passConf){errEl.textContent='Konfirmasi password tidak cocok';errEl.classList.add('show');return;}
  const p=DAFTAR_PEGAWAI[parseInt(pegawaiIdx)];
-
- const url=API_URL+'?action=register'
- + '&username='+encodeURIComponent(username)
- + '&password='+encodeURIComponent(password)
- + '&nama='+encodeURIComponent(p.nama);
-
+ const url=API_URL+'?action=register&username='+encodeURIComponent(username)+'&password='+encodeURIComponent(password)+'&nama='+encodeURIComponent(p.nama);
  const res=await fetch(url);
  const r=await res.json();
-
- if(!r.success){
-   errEl.textContent=r.message||'Registrasi gagal';
-   errEl.classList.add('show');
-   return;
- }
-
+ if(!r.success){errEl.textContent=r.message||'Registrasi gagal';errEl.classList.add('show');return;}
  succEl.textContent='Registrasi berhasil';
  succEl.classList.add('show');
 }
@@ -2321,38 +2302,20 @@ async function doLogin() {
   const password=document.getElementById('loginPassword').value;
   const errEl=document.getElementById('loginError');
   errEl.classList.remove('show');
-
-  if(!username||!password){
-    errEl.textContent='Isi username dan password';
-    errEl.classList.add('show');
-    return;
-  }
-
+  if(!username||!password){errEl.textContent='Isi username dan password';errEl.classList.add('show');return;}
   if(username==='admin' && password==='admin123'){
     currentUser={nama:'Administrator Sistem',username:'admin'};
   } else {
-    const url=API_URL+'?action=login&username='+encodeURIComponent(username)+'&password='+encodeURIComponent(password);
-    const res=await fetch(url);
+    const res=await fetch(API_URL,{method:'POST',body:JSON.stringify({action:'login',username,password})});
     const result=await res.json();
-
-    if(!result.success){
-      errEl.textContent=result.message||'Login gagal';
-      errEl.classList.add('show');
-      return;
-    }
-
-    currentUser={
-      nama:result.nama_lengkap || result.user?.nama_lengkap || username,
-      username:username
-    };
+    if(!result.success){errEl.textContent=result.message||'Login gagal';errEl.classList.add('show');return;}
+    currentUser={nama:result.user.nama_lengkap,username:result.user.username};
   }
-
   document.getElementById('loginOverlay').classList.add('hidden');
   document.getElementById('topbar').style.display='flex';
   document.getElementById('mainContent').style.display='block';
   document.getElementById('topbarName').textContent=currentUser.nama;
-  populatePegawaiDropdown();
-  populatePenilaiDropdown();
+  populatePegawaiDropdown(); populatePenilaiDropdown();
 }
 
 function doLogout() {
