@@ -3372,7 +3372,7 @@ updateTanggalDisplay();
 <script>
 window.login=window.doLogin;
 if(typeof switchLoginTab!=='function'){window.switchLoginTab=function(){};}
-document.addEventListener('DOMContentLoaded',()=>{console.log('patched');});
+document.addEventListener('DOMContentLoaded',async()=>{console.log('patched'); try{await loadPegawaiFromSupabase(); if(typeof populatePegawaiDropdown==='function') populatePegawaiDropdown(); if(typeof populatePenilaiDropdown==='function') populatePenilaiDropdown(); console.log('pegawai loaded init',DAFTAR_PEGAWAI?.length);}catch(e){console.error(e);} });
 </script>
 </body>
 </html>
