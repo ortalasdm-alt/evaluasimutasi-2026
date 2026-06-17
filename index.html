@@ -2959,28 +2959,65 @@ function collectData() {
 const GAS_URL = API_URL;
 
 async function saveToGoogleSheet() {
+
   const data = collectData();
 
+  console.log('KIRIM KE:', GAS_URL);
+  console.log('DATA:', data);
+
   try {
+
     const res = await fetch(GAS_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify(data)
     });
 
-    const result = await res.json();
+    console.log('STATUS:', res.status);
+
+    const text = await res.text();
+
+    console.log('RESPONSE:', text);
+
+    let result = {};
+
+    try {
+      result = JSON.parse(text);
+    } catch (e) {
+      console.error('Bukan JSON:', text);
+    }
 
     if (result.success) {
-      showAlert('Data berhasil disimpan ke Google Sheet!', 'success');
-    } else {
-      showAlert('Gagal menyimpan ke Google Sheet: ' + (result.error || ''), 'error');
-    }
-  } catch (err) {
-    console.error(err);
-    showAlert('Error Google Sheet: ' + err.message, 'error');
-  }
-}
 
+      showAlert(
+        'Data berhasil disimpan ke Google Sheet!',
+        'success'
+      );
+
+    } else {
+
+      showAlert(
+        'Gagal menyimpan ke Google Sheet: ' +
+        (result.error || text),
+        'error'
+      );
+
+    }
+
+  } catch (err) {
+
+    console.error('ERROR:', err);
+
+    showAlert(
+      'Error Google Sheet: ' + err.message,
+      'error'
+    );
+
+  }
+
+}
 
 function submitForm() {
   if (!validateForm()) return;
