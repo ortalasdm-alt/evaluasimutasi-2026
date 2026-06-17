@@ -1286,7 +1286,7 @@ async function apiGet(action){
 </script>
 
 
-<script>const API_URL='https://script.google.com/macros/s/AKfycbxhD9n4Q2OWGQOu_zNTupjjQV5NeFkB-rCtYTlXLo4t3Ouj0RGi0Ykq4uunegM6Hg4GFA/exec'; const supabase={from:()=>({select:()=>({}),insert:()=>({})}),auth:{}};</script>
+<script></script>
 </head>
 <body>
 
@@ -3426,6 +3426,12 @@ async function testSupabase() {
 // Set default tanggal penilaian ke hari ini
 document.getElementById('tanggalPenilaian').value = new Date().toISOString().split('T')[0];
 updateTanggalDisplay();
+</script>
+
+<script>
+window.login=window.doLogin;
+if(typeof switchLoginTab!=='function'){window.switchLoginTab=function(){};}
+document.addEventListener('DOMContentLoaded',()=>{console.log('patched');});
 </script>
 </body>
 </html>
