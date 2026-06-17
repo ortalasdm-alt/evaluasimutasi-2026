@@ -2281,8 +2281,8 @@ async function doRegister() {
 // STATE GLOBAL
 // ============================================================
 let currentUser = null;
-let supabaseConnected = false; const API_URL='https://script.google.com/macros/s/AKfycbxhD9n4Q2OWGQOu_zNTupjjQV5NeFkB-rCtYTlXLo4t3Ouj0RGi0Ykq4uunegM6Hg4GFA/exec';
-let supabaseUrl=''; let supabaseKey=''; const supabaseClient=null;
+// supabase removed const API_URL='https://script.google.com/macros/s/AKfycbxhD9n4Q2OWGQOu_zNTupjjQV5NeFkB-rCtYTlXLo4t3Ouj0RGi0Ykq4uunegM6Hg4GFA/exec';
+  
 
 async function loadPegawaiFromSupabase() {
  const data=await fetch(API_URL+'?action=pegawai').then(r=>r.json());
@@ -3023,79 +3023,8 @@ function submitForm() {
   if (!validateForm()) return;
   saveToGoogleSheet();
 }
-  async function uploadPdfToSupabase() {
+  
 
-  const data = collectData();
-
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-
-  doc.text(
-    `Evaluasi Mutasi - ${data.nama_pegawai}`,
-    20,
-    20
-  );
-
-  const blob = doc.output('blob');
-
-  const filename = `Evaluasi_${Date.now()}.pdf`;
-
-  const { error } = await supabaseClient.storage
-    .from('pdf evaluasi')
-    .upload(filename, blob, {
-      contentType: 'application/pdf',
-      upsert: true
-    });
-
-  if (error) {
-    console.error(error);
-    return null;
-  }
-
-  const { data: urlData } =
-    supabaseClient.storage
-      .from('pdf evaluasi')
-      .getPublicUrl(filename);
-
-  return urlData.publicUrl;
-}
-async function saveToSupabase() {
-  const data = collectData();
-
-  console.log('DATA KIRIM:', data);
-
-  try {
-
-    const res = await fetch(
-      `${supabaseUrl}/rest/v1/evaluasi_mutasi`,
-      {
-        method: 'POST',
-        headers: {
-          'apikey': supabaseKey,
-          'Authorization': 'Bearer ' + supabaseKey,
-          'Content-Type': 'application/json',
-          'Prefer': 'return=representation'
-        },
-        body: JSON.stringify(data)
-      }
-    );
-
-    console.log('STATUS:', res.status);
-
-    const responseText = await res.text();
-    console.log('RESPONSE:', responseText);
-
-    if (res.ok) {
-      showAlert('Data berhasil disimpan ke database!', 'success');
-    } else {
-      const err = await res.text();
-      showAlert('Gagal menyimpan: ' + responseText, 'error');
-    }
-  } catch (e) {
-    console.error('ERROR SAVE:', e);
-    showAlert('Error: ' + e.message, 'error');
-  }
-}
 function resetForm(silent = false) {
   if (!silent && !confirm('Reset semua data? Tindakan ini tidak dapat dibatalkan.')) return;
   document.querySelectorAll('input, textarea').forEach(el => {
@@ -3306,18 +3235,11 @@ showAlert('PDF berhasil diunduh: ' + filename, 'success');
 // ============================================================
 // SUPABASE CONFIG
 // ============================================================
-function toggleSupabaseConfig() {
-  const body = document.getElementById('supabaseConfigBody');
-  const icon = document.getElementById('supabaseToggleIcon');
-  body.classList.toggle('open');
-  icon.textContent = body.classList.contains('open') ? '▲' : '▼';
-}
 
 
 
-async function testSupabase() {
-  return true;
-}
+
+
 
 // ============================================================
 // DIGITAL SIGNATURE
