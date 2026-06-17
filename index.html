@@ -2298,35 +2298,70 @@ async function loadPegawaiFromSupabase() {
 // LOGIN / LOGOUT
 // ============================================================
 async function doLogin() {
-  const username=document.getElementById('loginUsername').value.trim().toLowerCase();
-  const password=document.getElementById('loginPassword').value;
-  const errEl=document.getElementById('loginError');
-  errEl.classList.remove('show');
-  if(!username||!password){errEl.textContent='Isi username dan password';errEl.classList.add('show');return;}
-  if(username==='admin' && password==='admin123'){
-    currentUser={nama:'Administrator Sistem',username:'admin'};
-  } else {
-    const res=await fetch(API_URL,{method:'POST',body:JSON.stringify({action:'login',username,password})});
-    const result=await res.json();
-    if(!result.success){errEl.textContent=result.message||'Login gagal';errEl.classList.add('show');return;}
-    currentUser={nama:result.user.nama_lengkap,username:result.user.username};
-  }
-  document.getElementById('loginOverlay').classList.add('hidden');
-  document.getElementById('topbar').style.display='flex';
-  document.getElementById('mainContent').style.display='block';
-  document.getElementById('topbarName').textContent=currentUser.nama;
-  populatePegawaiDropdown(); populatePenilaiDropdown();
-}
 
-function doLogout() {
-  currentUser = null;
-  document.getElementById('loginOverlay').classList.remove('hidden');
-  document.getElementById('topbar').style.display = 'none';
-  document.getElementById('mainContent').style.display = 'none';
-  document.getElementById('loginUsername').value = '';
-  document.getElementById('loginPassword').value = '';
-  
-  resetForm(true);
+  const username = document.getElementById('loginUsername').value.trim().toLowerCase();
+  const password = document.getElementById('loginPassword').value;
+
+  const errEl = document.getElementById('loginError');
+  errEl.classList.remove('show');
+
+  if (!username || !password) {
+    errEl.textContent = 'Isi username dan password';
+    errEl.classList.add('show');
+    return;
+  }
+
+  // admin lokal
+  if (username === 'admin' && password === 'admin123') {
+
+    currentUser = {
+      nama: 'Administrator Sistem',
+      username: 'admin'
+    };
+
+  } else {
+
+    const url =
+      API_URL +
+      '?action=login' +
+      '&username=' + encodeURIComponent(username) +
+      '&password=' + encodeURIComponent(password);
+
+    try {
+
+      const res = await fetch(url);
+      const result = await res.json();
+
+      console.log(result);
+
+      if (!result.success) {
+        errEl.textContent = result.message || 'Login gagal';
+        errEl.classList.add('show');
+        return;
+      }
+
+      currentUser = {
+        nama: result.nama_lengkap,
+        username: username
+      };
+
+    } catch (err) {
+
+      console.error(err);
+
+      errEl.textContent = 'Gagal menghubungi server';
+      errEl.classList.add('show');
+      return;
+    }
+  }
+
+  document.getElementById('loginOverlay').classList.add('hidden');
+  document.getElementById('topbar').style.display = 'flex';
+  document.getElementById('mainContent').style.display = 'block';
+  document.getElementById('topbarName').textContent = currentUser.nama;
+
+  populatePegawaiDropdown();
+  populatePenilaiDropdown();
 }
 async function uploadPDFToSupabase(pdfBlob){ return null; }
 // ============================================================
